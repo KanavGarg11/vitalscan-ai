@@ -12,7 +12,7 @@
 | 1 | **Kanav Garg** | 2400270100093 |
 | 2 | **Harshit Singh** | 2400270100089 |
 | 3 | **Harshit Singh** | 2400270100090 |
-| 4 | **Dipanshu Chaudhary** | 2400270100089 |
+| 4 | **Dipanshu Chaudhary** | 2400270100077 |
 
 ---
 
