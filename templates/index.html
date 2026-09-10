@@ -137,7 +137,7 @@
     <!-- Main Content Area -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 w-full space-y-6">
 
-        <!-- SECTION 1: 4 COMPACT INPUT BOXES (2x2 GRID) -->
+        <!-- Biomarker Input Panels -->
         <section>
             <div class="flex items-center justify-between mb-3">
                 <div>
@@ -154,7 +154,7 @@
             <!-- 2x2 Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                <!-- BOX 1: Metabolic & Glycemic (4 features) -->
+                <!-- Panel 1: Metabolic & Glycemic -->
                 <div class="bg-cardbg rounded-xl p-4 border border-cardborder shadow-sm flex flex-col justify-between">
                     <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80">
                         <div class="flex items-center gap-2">
@@ -170,7 +170,7 @@
                     </div>
                 </div>
 
-                <!-- BOX 2: Complete Blood Count (CBC) (8 features, compact scroll) -->
+                <!-- Panel 2: Complete Blood Count (CBC) -->
                 <div class="bg-cardbg rounded-xl p-4 border border-cardborder shadow-sm flex flex-col justify-between">
                     <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80">
                         <div class="flex items-center gap-2">
@@ -186,7 +186,7 @@
                     </div>
                 </div>
 
-                <!-- BOX 3: Cardiovascular & Vitals (5 features) -->
+                <!-- Panel 3: Cardiovascular & Vitals -->
                 <div class="bg-cardbg rounded-xl p-4 border border-cardborder shadow-sm flex flex-col justify-between">
                     <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80">
                         <div class="flex items-center gap-2">
@@ -202,7 +202,7 @@
                     </div>
                 </div>
 
-                <!-- BOX 4: Lipids, Hepatic & Renal (7 features, compact scroll) -->
+                <!-- Panel 4: Lipids, Hepatic & Renal -->
                 <div class="bg-cardbg rounded-xl p-4 border border-cardborder shadow-sm flex flex-col justify-between">
                     <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80">
                         <div class="flex items-center gap-2">
@@ -220,7 +220,7 @@
 
             </div>
 
-            <!-- COMPUTE ANALYSIS BUTTON -->
+            <!-- Action Button -->
             <div class="mt-5 flex flex-col items-center">
                 <button onclick="computeAnalysisAndScroll()" class="w-full max-w-lg py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-cyan-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2.5 tracking-wide">
                     <i class="fa-solid fa-calculator text-base"></i>
@@ -233,10 +233,10 @@
             </div>
         </section>
 
-        <!-- DIVIDER WITH ANCHOR -->
+        <!-- Anchor -->
         <div id="results-section" class="pt-8 border-t border-slate-800/80"></div>
 
-        <!-- SECTION 2: RESULTS SECTION (WHEN SCROLLING DOWN) -->
+        <!-- Prediction Results -->
         <section class="space-y-6">
 
             <div class="flex items-center justify-between">
@@ -251,7 +251,7 @@
                 </span>
             </div>
 
-            <!-- Pure ML Classification Verdict Card -->
+            <!-- Result Summary Card -->
             <div class="bg-cardbg rounded-2xl p-6 border border-cardborder shadow-xl">
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
                     
@@ -286,7 +286,7 @@
                 </div>
             </div>
 
-            <!-- SECTION 3: ABNORMAL FACTORS (ONLY DEVIATING INPUTS) -->
+            <!-- Biomarker Deviation Analysis -->
             <div class="bg-cardbg rounded-2xl p-6 border border-cardborder shadow-xl space-y-4">
                 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
