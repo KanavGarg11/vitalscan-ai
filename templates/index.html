@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalScan AI - Machine Learning Disease Screener</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#080d1a',
+                        cardbg: '#0f172a',
+                        cardborder: '#1e293b',
+                        accent: '#06b6d4',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        input[type=range] {
+            -webkit-appearance: none;
+            background: #1e293b;
+            border-radius: 9999px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 15px;
+            width: 15px;
+            border-radius: 50%;
+            background: #06b6d4;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+            transition: transform 0.1s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #38bdf8;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-darkbg text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-cyan-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-[#0b1329]/95 backdrop-blur border-b border-slate-800/80 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <!-- Brand -->
+            <div class="flex items-center space-x-3">
+                <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-brain text-base animate-pulse"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base font-bold tracking-tight text-white">VitalScan <span class="text-cyan-400">AI</span></h1>
+                        <span class="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">ML Classifier</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 hidden sm:block">Logistic Regression Binary Disease Prediction</p>
+                </div>
+            </div>
+
+            <!-- Preset Dropdown Menu Button -->
+            <div class="relative">
+                <button id="presetDropdownBtn" onclick="togglePresetDropdown()" class="px-3.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 hover:border-cyan-500/50 flex items-center gap-2 transition shadow-sm active:scale-95">
+                    <i class="fa-solid fa-sliders text-cyan-400"></i>
+                    <span>Choose Input Preset</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                </button>
+
+                <!-- Dropdown Menu items -->
+                <div id="presetDropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-[#0f172a] border border-slate-700 rounded-xl shadow-2xl py-1.5 z-50 divide-y divide-slate-800">
+                    <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        Patient Test Scenarios
+                    </div>
+                    <div class="py-1">
+                        <button onclick="selectPreset('healthy')" class="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-800/80 text-emerald-400 flex items-center gap-2.5 transition">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50"></span>
+                            <div>
+                                <div class="font-semibold text-slate-200">Healthy Adult</div>
+                                <div class="text-[10px] text-slate-400">All 24 biomarkers within normal bounds</div>
+                            </div>
+                        </button>
+                        <button onclick="selectPreset('diabetes')" class="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-800/80 text-amber-400 flex items-center gap-2.5 transition">
+                            <span class="w-2 h-2 rounded-full bg-amber-400 shadow-sm shadow-amber-400/50"></span>
+                            <div>
+                                <div class="font-semibold text-slate-200">Type 2 Diabetes Risk</div>
+                                <div class="text-[10px] text-slate-400">Elevated Glucose, HbA1c & Insulin</div>
+                            </div>
+                        </button>
+                        <button onclick="selectPreset('anemia')" class="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-800/80 text-orange-400 flex items-center gap-2.5 transition">
+                            <span class="w-2 h-2 rounded-full bg-orange-400 shadow-sm shadow-orange-400/50"></span>
+                            <div>
+                                <div class="font-semibold text-slate-200">Severe Anemia Profile</div>
+                                <div class="text-[10px] text-slate-400">Depleted Hemoglobin & Red Cells</div>
+                            </div>
+                        </button>
+                        <button onclick="selectPreset('cardiac')" class="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-800/80 text-rose-400 flex items-center gap-2.5 transition">
+                            <span class="w-2 h-2 rounded-full bg-rose-400 shadow-sm shadow-rose-400/50"></span>
+                            <div>
+                                <div class="font-semibold text-slate-200">Acute Cardiac Alert</div>
+                                <div class="text-[10px] text-slate-400">Elevated Troponin, CRP & BP</div>
+                            </div>
+                        </button>
+                        <button onclick="selectPreset('thromboc')" class="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-800/80 text-purple-400 flex items-center gap-2.5 transition">
+                            <span class="w-2 h-2 rounded-full bg-purple-400 shadow-sm shadow-purple-400/50"></span>
+                            <div>
+                                <div class="font-semibold text-slate-200">Thrombocytopenia</div>
+                                <div class="text-[10px] text-slate-400">Critically depleted Platelets</div>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="py-1">
+                        <button onclick="selectPreset('healthy')" class="w-full text-left px-3.5 py-1.5 text-xs hover:bg-slate-800 text-slate-400 hover:text-slate-200 flex items-center gap-2 transition">
+                            <i class="fa-solid fa-rotate-left text-[11px]"></i> Reset All to Baseline
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 w-full space-y-6">
+
+        <!-- SECTION 1: 4 COMPACT INPUT BOXES (2x2 GRID) -->
+        <section>
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                        <i class="fa-solid fa-vials text-cyan-400"></i> Model Input Features (24 Normalized Biomarkers)
+                    </h2>
+                    <p class="text-[11px] text-slate-500">Inputs normalized between 0.00 and 1.00. Set manually or load from presets.</p>
+                </div>
+                <span class="text-[11px] text-slate-500 font-mono bg-slate-900 px-2 py-0.5 rounded border border-slate-800 hidden sm:inline">
+                    Healthy Target: 0.30 - 0.55
+                </span>
+            </div>
+
+            <!-- 2x2 Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <!-- BOX 1: Metabolic & Glycemic (4 features) -->
+                <div class="bg-cardbg rounded-xl p-4 border border-cardborder shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-cube"></i>
+                            </span>
+                            <h3 class="font-bold text-xs text-slate-200 uppercase tracking-wide">1. Metabolic & Glycemic</h3>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono">4 Biomarkers</span>
+                    </div>
+                    <div id="panel-metabolic" class="space-y-2.5">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- BOX 2: Complete Blood Count (CBC) (8 features, compact scroll) -->
+                <div class="bg-cardbg rounded-xl p-4 border border-cardborder shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-droplet"></i>
+                            </span>
+                            <h3 class="font-bold text-xs text-slate-200 uppercase tracking-wide">2. Complete Blood Count (CBC)</h3>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono">8 Biomarkers</span>
+                    </div>
+                    <div id="panel-hematology" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1.5 custom-scroll">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- BOX 3: Cardiovascular & Vitals (5 features) -->
+                <div class="bg-cardbg rounded-xl p-4 border border-cardborder shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-heart-pulse"></i>
+                            </span>
+                            <h3 class="font-bold text-xs text-slate-200 uppercase tracking-wide">3. Cardiovascular & Vitals</h3>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono">5 Biomarkers</span>
+                    </div>
+                    <div id="panel-cardio" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1.5 custom-scroll">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- BOX 4: Lipids, Hepatic & Renal (7 features, compact scroll) -->
+                <div class="bg-cardbg rounded-xl p-4 border border-cardborder shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-flask"></i>
+                            </span>
+                            <h3 class="font-bold text-xs text-slate-200 uppercase tracking-wide">4. Lipids, Hepatic & Renal</h3>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono">7 Biomarkers</span>
+                    </div>
+                    <div id="panel-organ" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1.5 custom-scroll">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- COMPUTE ANALYSIS BUTTON -->
+            <div class="mt-5 flex flex-col items-center">
+                <button onclick="computeAnalysisAndScroll()" class="w-full max-w-lg py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-cyan-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2.5 tracking-wide">
+                    <i class="fa-solid fa-microchip text-base"></i>
+                    <span>COMPUTE ANALYSIS</span>
+                    <i class="fa-solid fa-arrow-down text-xs animate-bounce ml-1"></i>
+                </button>
+                <p class="text-[11px] text-slate-500 mt-2">
+                    Evaluates Logistic Regression model & scrolls to diagnostic result below
+                </p>
+            </div>
+        </section>
+
+        <!-- DIVIDER WITH ANCHOR -->
+        <div id="results-section" class="pt-8 border-t border-slate-800/80"></div>
+
+        <!-- SECTION 2: RESULTS SECTION (WHEN SCROLLING DOWN) -->
+        <section class="space-y-6">
+
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-cyan-400"></i> Model Classification Result
+                    </h2>
+                    <p class="text-xs text-slate-400">Output generated strictly by the trained Logistic Regression classifier.</p>
+                </div>
+                <span id="risk-status-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                    Low Risk (Class 0)
+                </span>
+            </div>
+
+            <!-- Pure ML Classification Verdict Card -->
+            <div class="bg-cardbg rounded-2xl p-6 border border-cardborder shadow-xl">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    
+                    <!-- Verdict & Predicted Class (6 Columns) -->
+                    <div class="md:col-span-6 flex items-center gap-4">
+                        <div id="verdict-icon-box" class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-2xl flex-shrink-0">
+                            <i id="verdict-icon" class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div>
+                            <div class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Predicted Target Class</div>
+                            <h3 id="verdict-title" class="text-2xl font-black tracking-tight text-emerald-400">HEALTHY (CLASS 0)</h3>
+                            <p id="verdict-subtitle" class="text-xs text-slate-400 mt-0.5">Calculated risk is safely below the 0.45 triage threshold.</p>
+                        </div>
+                    </div>
+
+                    <!-- Model Probability Meter (6 Columns) -->
+                    <div class="md:col-span-6 bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <div class="flex justify-between text-xs font-medium">
+                            <span class="text-slate-400">Probability P(Disease = 1):</span>
+                            <span id="verdict-probability" class="font-bold text-cyan-400 font-mono text-sm">0.2%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
+                            <div id="verdict-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-700 shadow-sm" style="width: 0.2%"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-400 font-mono pt-1">
+                            <span>Healthy (Class 0)</span>
+                            <span class="text-amber-400 font-semibold">Decision Cutoff: 0.45</span>
+                            <span>Disease (Class 1)</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SECTION 3: FACTORS CONTRIBUTING AND HEALTHY (SHOULD BE) VALUES -->
+            <!-- ONLY showing factors that are abnormal / deviating from optimal healthy bounds -->
+            <div class="bg-cardbg rounded-2xl p-6 border border-cardborder shadow-xl space-y-4">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
+                    <div>
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Contributing Risk Factors (Abnormal Biomarkers)
+                        </h3>
+                        <p class="text-xs text-slate-400">
+                            Lists only biomarkers that deviate from expected healthy values, showing their value vs what they should be.
+                        </p>
+                    </div>
+                    <span id="abnormal-count-badge" class="px-2.5 py-1 rounded-md text-[11px] font-mono bg-slate-900 border border-slate-800 text-cyan-400">
+                        0 Abnormal Biomarkers
+                    </span>
+                </div>
+
+                <!-- Comparison Table of Abnormal Factors -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300 border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-[11px] text-slate-400 uppercase tracking-wider bg-slate-900/50">
+                                <th class="py-2.5 px-3">Contributing Biomarker</th>
+                                <th class="py-2.5 px-3">Panel</th>
+                                <th class="py-2.5 px-3 text-right">Patient's Value</th>
+                                <th class="py-2.5 px-3 text-center">Healthy Value (Should Be)</th>
+                                <th class="py-2.5 px-3">Deviation from Normal</th>
+                                <th class="py-2.5 px-3 text-right">Model Risk Weight (β · z)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="factors-table-body" class="divide-y divide-slate-800/60 font-sans">
+                            <!-- Populated dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Banner when NO abnormal factors are found (e.g. Healthy) -->
+                <div id="all-healthy-banner" class="hidden p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center text-xs text-emerald-300 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+                    <span>All 24 biomarkers are within optimal healthy reference bounds. No adverse contributing factors detected.</span>
+                </div>
+
+                <!-- Mathematical Footnote -->
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-[11px] text-slate-400 flex items-start gap-2.5">
+                    <i class="fa-solid fa-circle-info text-cyan-400 mt-0.5 text-xs"></i>
+                    <div>
+                        <strong class="text-slate-200">Logistic Regression Feature Weight:</strong> 
+                        Impact is computed as <span class="font-mono text-cyan-300">Impact = βᵢ · zᵢ</span>, where <span class="font-mono text-slate-300">zᵢ</span> is the standardized biomarker and <span class="font-mono text-slate-300">βᵢ</span> is the model's learned coefficient. Factors with positive impact push the sigmoid function toward a diseased classification.
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0b1329] border-t border-slate-800/80 py-4 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            VitalScan AI &bull; Logistic Regression Disease Prediction &bull; Built with Flask & Scikit-Learn
+        </div>
+    </footer>
+
+    <!-- Client-side Logic -->
+    <script>
+        let FEATURES = [];
+        let PRESETS = {};
+        let LAST_RESULT = null;
+
+        // Initialize App
+        async function init() {
+            try {
+                const res = await fetch('/api/metadata');
+                const data = await res.json();
+                FEATURES = data.features;
+                PRESETS = data.presets;
+                renderInputPanels();
+                // Compute initial baseline
+                await evaluatePatient(false);
+            } catch (err) {
+                console.error("Initialization error:", err);
+            }
+        }
+
+        // Toggle Preset Dropdown
+        function togglePresetDropdown() {
+            const menu = document.getElementById('presetDropdownMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function(e) {
+            const btn = document.getElementById('presetDropdownBtn');
+            const menu = document.getElementById('presetDropdownMenu');
+            if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // Select a Preset
+        function selectPreset(presetKey) {
+            const preset = PRESETS[presetKey];
+            if (!preset) return;
+
+            for (const [key, val] of Object.entries(preset.values)) {
+                const numEl = document.getElementById(`num-${key}`);
+                const rangeEl = document.getElementById(`range-${key}`);
+                if (numEl && rangeEl) {
+                    numEl.value = parseFloat(val).toFixed(2);
+                    rangeEl.value = parseFloat(val);
+                }
+            }
+
+            // Close dropdown
+            document.getElementById('presetDropdownMenu').classList.add('hidden');
+
+            // Re-evaluate
+            evaluatePatient(false);
+        }
+
+        // Render inputs into the 4 distinct 2x2 grid boxes
+        function renderInputPanels() {
+            const panels = {
+                "Metabolic & Glycemic": document.getElementById('panel-metabolic'),
+                "Complete Blood Count (CBC)": document.getElementById('panel-hematology'),
+                "Cardiovascular & Vitals": document.getElementById('panel-cardio'),
+                "Lipids, Hepatic & Renal": document.getElementById('panel-organ')
+            };
+
+            FEATURES.forEach(f => {
+                const panel = panels[f.category];
+                if (!panel) return;
+
+                const row = document.createElement('div');
+                row.className = "bg-slate-900/60 p-2 rounded-lg border border-slate-800/80 hover:border-slate-700 transition";
+                row.innerHTML = `
+                    <div class="flex justify-between items-center mb-1 text-xs">
+                        <span class="font-medium text-slate-300 truncate max-w-[140px] sm:max-w-[170px]" title="${f.desc}">
+                            ${f.name}
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-slate-500 font-mono">Norm: ${f.normal}</span>
+                            <input type="number" id="num-${f.id}" min="0.0" max="1.0" step="0.01" value="${f.default}"
+                                onchange="syncSlider('${f.id}', this.value)"
+                                class="w-14 px-1 py-0.5 text-xs text-right font-mono bg-slate-950 border border-slate-700 rounded text-cyan-300 focus:ring-1 focus:ring-cyan-500 focus:outline-none">
+                        </div>
+                    </div>
+                    <input type="range" id="range-${f.id}" min="0.0" max="1.0" step="0.01" value="${f.default}"
+                        oninput="syncNumber('${f.id}', this.value)"
+                        class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                `;
+                panel.appendChild(row);
+            });
+        }
+
+        function syncSlider(id, val) {
+            const num = parseFloat(val) || 0.0;
+            const clamped = Math.max(0.0, Math.min(1.0, num));
+            document.getElementById(`range-${id}`).value = clamped;
+            document.getElementById(`num-${id}`).value = clamped.toFixed(2);
+        }
+
+        function syncNumber(id, val) {
+            document.getElementById(`num-${id}`).value = parseFloat(val).toFixed(2);
+        }
+
+        // Compute and Smooth Scroll to Results Section
+        async function computeAnalysisAndScroll() {
+            await evaluatePatient(true);
+        }
+
+        // Call backend API
+        async function evaluatePatient(shouldScroll = false) {
+            const payload = {};
+            FEATURES.forEach(f => {
+                const numEl = document.getElementById(`num-${f.id}`);
+                payload[f.id] = numEl ? parseFloat(numEl.value) : f.default;
+            });
+
+            try {
+                const res = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                LAST_RESULT = result;
+                updateResultsUI(result);
+
+                if (shouldScroll) {
+                    document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (err) {
+                console.error("Evaluation error:", err);
+            }
+        }
+
+        // Update Results UI (Pure ML focus)
+        function updateResultsUI(res) {
+            const statusBadge = document.getElementById('risk-status-badge');
+            const iconBox = document.getElementById('verdict-icon-box');
+            const icon = document.getElementById('verdict-icon');
+            const title = document.getElementById('verdict-title');
+            const subtitle = document.getElementById('verdict-subtitle');
+            const prob = document.getElementById('verdict-probability');
+            const bar = document.getElementById('verdict-progress-bar');
+            const countBadge = document.getElementById('abnormal-count-badge');
+            const banner = document.getElementById('all-healthy-banner');
+            const tbody = document.getElementById('factors-table-body');
+
+            prob.innerText = `${res.probability_disease}%`;
+            bar.style.width = `${res.probability_disease}%`;
+
+            // Binary Classification output styling
+            if (res.risk_level === "Low") {
+                title.innerText = "HEALTHY (CLASS 0)";
+                title.className = "text-2xl font-black tracking-tight text-emerald-400";
+                subtitle.innerText = "Calculated risk is safely below the 0.45 triage cutoff.";
+                statusBadge.innerText = "Class 0 (Negative)";
+                statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+                iconBox.className = "w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-2xl flex-shrink-0";
+                icon.className = "fa-solid fa-circle-check";
+                bar.className = "h-full bg-emerald-500 rounded-full transition-all duration-700";
+            } else if (res.risk_level.includes("Moderate")) {
+                title.innerText = "BORDERLINE RISK";
+                title.className = "text-2xl font-black tracking-tight text-amber-400";
+                subtitle.innerText = "Close to decision boundary (0.28 - 0.45).";
+                statusBadge.innerText = "Borderline Zone";
+                statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30";
+                iconBox.className = "w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-2xl flex-shrink-0";
+                icon.className = "fa-solid fa-triangle-exclamation";
+                bar.className = "h-full bg-amber-500 rounded-full transition-all duration-700";
+            } else {
+                title.innerText = "DISEASE DETECTED (CLASS 1)";
+                title.className = "text-2xl font-black tracking-tight text-rose-400";
+                subtitle.innerText = "Calculated probability exceeds the 0.45 classification cutoff.";
+                statusBadge.innerText = "Class 1 (Positive)";
+                statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-500/10 text-rose-400 border border-rose-500/30 animate-pulse";
+                iconBox.className = "w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center text-2xl flex-shrink-0";
+                icon.className = "fa-solid fa-circle-exclamation";
+                bar.className = "h-full bg-rose-500 rounded-full transition-all duration-700";
+            }
+
+            // Render Abnormal Factors Table (Strictly excluding optimal factors)
+            tbody.innerHTML = "";
+            const abnormalList = res.abnormal_factors || [];
+            countBadge.innerText = `${abnormalList.length} Abnormal Biomarkers`;
+
+            if (abnormalList.length === 0) {
+                banner.classList.remove('hidden');
+                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-500 italic">No abnormal factors detected.</td></tr>`;
+            } else {
+                banner.classList.add('hidden');
+                abnormalList.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-900/40 transition";
+
+                    let statusHtml = "";
+                    let valColor = "text-slate-200";
+
+                    if (item.status_badge === "high") {
+                        statusHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30"><i class="fa-solid fa-arrow-up mr-1"></i>${item.diff_text}</span>`;
+                        valColor = "text-rose-400 font-bold";
+                    } else {
+                        statusHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/10 text-sky-400 border border-sky-500/30"><i class="fa-solid fa-arrow-down mr-1"></i>${item.diff_text}</span>`;
+                        valColor = "text-sky-400 font-bold";
+                    }
+
+                    const contribText = (item.contribution > 0) ? `+${item.contribution.toFixed(2)}` : `${item.contribution.toFixed(2)}`;
+                    const contribBadge = (item.contribution > 0) 
+                        ? `<span class="font-mono text-rose-400 font-bold">${contribText}</span>` 
+                        : `<span class="font-mono text-emerald-400">${contribText}</span>`;
+
+                    tr.innerHTML = `
+                        <td class="py-2.5 px-3 font-semibold text-slate-200">
+                            ${item.name}
+                        </td>
+                        <td class="py-2.5 px-3 text-[11px] text-slate-400">
+                            ${item.category}
+                        </td>
+                        <td class="py-2.5 px-3 text-right font-mono ${valColor}">
+                            ${item.raw_value.toFixed(2)}
+                        </td>
+                        <td class="py-2.5 px-3 text-center font-mono text-slate-300">
+                            <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800 text-[11px] text-emerald-400/90 font-medium">
+                                ${item.healthy_range} (Typical: ${item.healthy_typical})
+                            </span>
+                        </td>
+                        <td class="py-2.5 px-3">
+                            ${statusHtml}
+                        </td>
+                        <td class="py-2.5 px-3 text-right">
+                            ${contribBadge}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        // Start on DOM ready
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
