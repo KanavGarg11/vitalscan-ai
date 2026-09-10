@@ -1,10 +1,7 @@
 """
-VitalScan AI - Simple Model Training & Export Script
-Standard B.Tech ML Workflow:
-1. Load features & target
-2. Apply StandardScaler
-3. Train Logistic Regression
-4. Export model & scaler for web deployment
+Model training and export script.
+Trains a Logistic Regression classifier on standardized biomarker data
+and saves the trained model, scaler, and feature list.
 """
 import numpy as np
 import pandas as pd
@@ -26,7 +23,7 @@ FEATURES = [
 ]
 
 def generate_cohort(n_samples=1000):
-    """Generates synthetic cohort matching the dataset blood distribution."""
+    """Simulates patient biomarker distribution for model fitting."""
     records = []
     labels = []
     
@@ -72,7 +69,7 @@ def train_and_export():
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
     
-    print("3. Training standard Logistic Regression model...")
+    print("3. Training Logistic Regression model...")
     model = LogisticRegression(max_iter=1000, random_state=42)
     model.fit(X_train_scaled, y_train)
     

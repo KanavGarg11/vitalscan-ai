@@ -1,10 +1,6 @@
 """
-VitalScan AI - Simple B.Tech ML Web Application
-Standard Workflow:
-1. Receives 24 biomarker inputs
-2. Scales features using StandardScaler
-3. Generates prediction using standard Logistic Regression (threshold = 0.50)
-4. Displays abnormal inputs alongside expected healthy ranges
+VitalScan - Disease Prediction System
+Web application for blood test biomarker analysis using Logistic Regression.
 """
 from flask import Flask, render_template, request, jsonify
 import joblib
@@ -23,9 +19,9 @@ model = joblib.load(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)
 features = joblib.load(FEATURES_PATH)
 
-# Feature metadata: grouped into 4 distinct clinical panels for 2x2 grid
+# Feature metadata grouped by diagnostic panel
 FEATURE_METADATA = [
-    # Box 1: Metabolic & Glycemic (4 features)
+    # Panel 1: Metabolic & Glycemic
     {
         "id": "Glucose",
         "name": "Blood Glucose",
@@ -71,7 +67,7 @@ FEATURE_METADATA = [
         "desc": "Body mass fat proportion index"
     },
 
-    # Box 2: Complete Blood Count (CBC) (8 features)
+    # Panel 2: Complete Blood Count (CBC)
     {
         "id": "Hemoglobin",
         "name": "Hemoglobin (Hb)",
@@ -161,7 +157,7 @@ FEATURE_METADATA = [
         "desc": "Concentration of hemoglobin in packed RBCs"
     },
 
-    # Box 3: Cardiovascular & Vitals (5 features)
+    # Panel 3: Cardiovascular & Vitals
     {
         "id": "Systolic Blood Pressure",
         "name": "Systolic Blood Pressure",
@@ -218,7 +214,7 @@ FEATURE_METADATA = [
         "desc": "Acute-phase systemic inflammatory marker"
     },
 
-    # Box 4: Lipids, Hepatic & Renal (7 features)
+    # Panel 4: Lipids, Hepatic & Renal
     {
         "id": "Cholesterol",
         "name": "Total Cholesterol",
@@ -378,16 +374,16 @@ def predict():
             val = max(0.0, min(1.0, val))
             input_vector.append(val)
         
-        # 2. Scale features
+        # Feature scaling
         X_df = pd.DataFrame([input_vector], columns=features)
         X_scaled = scaler.transform(X_df)
         
-        # 3. Standard Logistic Regression Prediction & Probability
+        # Model inference
         prediction = int(model.predict(X_scaled)[0])
         prob_disease = float(model.predict_proba(X_scaled)[0][1])
         prob_healthy = float(1.0 - prob_disease)
         
-        # Standard 0.50 decision threshold
+        # Decision threshold
         if prediction == 1:
             status = "DISEASE DETECTED (CLASS 1)"
             status_badge = "Class 1"
@@ -395,7 +391,7 @@ def predict():
             status = "HEALTHY (CLASS 0)"
             status_badge = "Class 0"
         
-        # 4. Identify only abnormal factors (filter out optimal ones)
+        # Filter abnormal biomarkers
         abnormal_factors = []
         
         for feat, raw_val in zip(features, input_vector):
@@ -444,11 +440,11 @@ def predict():
 
 @app.route('/healthz')
 def healthz():
-    """Health check endpoint for Render."""
-    return jsonify({"status": "healthy", "service": "vitalscan-ai"}), 200
+    """Service health check endpoint."""
+    return jsonify({"status": "healthy", "service": "vitalscan"}), 200
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     debug_mode = os.environ.get('FLASK_ENV') == 'development'
-    print(f"Starting VitalScan AI on http://0.0.0.0:{port}")
+    print(f"Server running on port {port}")
     app.run(debug=debug_mode, host='0.0.0.0', port=port)
