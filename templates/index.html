@@ -63,7 +63,7 @@
             <!-- Brand -->
             <div class="flex items-center space-x-3">
                 <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
-                    <i class="fa-solid fa-brain text-base animate-pulse"></i>
+                    <i class="fa-solid fa-heart-pulse text-base animate-pulse"></i>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
@@ -85,7 +85,7 @@
                 <!-- Dropdown Menu items -->
                 <div id="presetDropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-[#0f172a] border border-slate-700 rounded-xl shadow-2xl py-1.5 z-50 divide-y divide-slate-800">
                     <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                        Patient Test Scenarios
+                        Patient Test Profiles
                     </div>
                     <div class="py-1">
                         <button onclick="selectPreset('healthy')" class="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-800/80 text-emerald-400 flex items-center gap-2.5 transition">
@@ -98,35 +98,35 @@
                         <button onclick="selectPreset('diabetes')" class="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-800/80 text-amber-400 flex items-center gap-2.5 transition">
                             <span class="w-2 h-2 rounded-full bg-amber-400 shadow-sm shadow-amber-400/50"></span>
                             <div>
-                                <div class="font-semibold text-slate-200">Type 2 Diabetes Risk</div>
-                                <div class="text-[10px] text-slate-400">Elevated Glucose, HbA1c & Insulin</div>
+                                <div class="font-semibold text-slate-200">Diabetes Risk Profile</div>
+                                <div class="text-[10px] text-slate-400">High Glucose, HbA1c & Insulin</div>
                             </div>
                         </button>
                         <button onclick="selectPreset('anemia')" class="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-800/80 text-orange-400 flex items-center gap-2.5 transition">
                             <span class="w-2 h-2 rounded-full bg-orange-400 shadow-sm shadow-orange-400/50"></span>
                             <div>
-                                <div class="font-semibold text-slate-200">Severe Anemia Profile</div>
-                                <div class="text-[10px] text-slate-400">Depleted Hemoglobin & Red Cells</div>
+                                <div class="font-semibold text-slate-200">Anemia Risk Profile</div>
+                                <div class="text-[10px] text-slate-400">Low Hemoglobin & Red Blood Cells</div>
                             </div>
                         </button>
                         <button onclick="selectPreset('cardiac')" class="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-800/80 text-rose-400 flex items-center gap-2.5 transition">
                             <span class="w-2 h-2 rounded-full bg-rose-400 shadow-sm shadow-rose-400/50"></span>
                             <div>
-                                <div class="font-semibold text-slate-200">Acute Cardiac Alert</div>
-                                <div class="text-[10px] text-slate-400">Elevated Troponin, CRP & BP</div>
+                                <div class="font-semibold text-slate-200">Cardiac Risk Alert</div>
+                                <div class="text-[10px] text-slate-400">High Troponin, CRP & Blood Pressure</div>
                             </div>
                         </button>
                         <button onclick="selectPreset('thromboc')" class="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-800/80 text-purple-400 flex items-center gap-2.5 transition">
                             <span class="w-2 h-2 rounded-full bg-purple-400 shadow-sm shadow-purple-400/50"></span>
                             <div>
                                 <div class="font-semibold text-slate-200">Thrombocytopenia</div>
-                                <div class="text-[10px] text-slate-400">Critically depleted Platelets</div>
+                                <div class="text-[10px] text-slate-400">Critically low Platelet count</div>
                             </div>
                         </button>
                     </div>
                     <div class="py-1">
                         <button onclick="selectPreset('healthy')" class="w-full text-left px-3.5 py-1.5 text-xs hover:bg-slate-800 text-slate-400 hover:text-slate-200 flex items-center gap-2 transition">
-                            <i class="fa-solid fa-rotate-left text-[11px]"></i> Reset All to Baseline
+                            <i class="fa-solid fa-rotate-left text-[11px]"></i> Reset to Normal Baseline
                         </button>
                     </div>
                 </div>
@@ -142,12 +142,12 @@
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                        <i class="fa-solid fa-vials text-cyan-400"></i> Model Input Features (24 Normalized Biomarkers)
+                        <i class="fa-solid fa-vials text-cyan-400"></i> Model Input Features (24 Biomarkers)
                     </h2>
-                    <p class="text-[11px] text-slate-500">Inputs normalized between 0.00 and 1.00. Set manually or load from presets.</p>
+                    <p class="text-[11px] text-slate-500">Values are normalized between 0.00 and 1.00.</p>
                 </div>
                 <span class="text-[11px] text-slate-500 font-mono bg-slate-900 px-2 py-0.5 rounded border border-slate-800 hidden sm:inline">
-                    Healthy Target: 0.30 - 0.55
+                    Normal Range: 0.30 - 0.55
                 </span>
             </div>
 
@@ -163,7 +163,7 @@
                             </span>
                             <h3 class="font-bold text-xs text-slate-200 uppercase tracking-wide">1. Metabolic & Glycemic</h3>
                         </div>
-                        <span class="text-[10px] text-slate-400 font-mono">4 Biomarkers</span>
+                        <span class="text-[10px] text-slate-400 font-mono">4 Features</span>
                     </div>
                     <div id="panel-metabolic" class="space-y-2.5">
                         <!-- Populated by JS -->
@@ -179,7 +179,7 @@
                             </span>
                             <h3 class="font-bold text-xs text-slate-200 uppercase tracking-wide">2. Complete Blood Count (CBC)</h3>
                         </div>
-                        <span class="text-[10px] text-slate-400 font-mono">8 Biomarkers</span>
+                        <span class="text-[10px] text-slate-400 font-mono">8 Features</span>
                     </div>
                     <div id="panel-hematology" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1.5 custom-scroll">
                         <!-- Populated by JS -->
@@ -195,7 +195,7 @@
                             </span>
                             <h3 class="font-bold text-xs text-slate-200 uppercase tracking-wide">3. Cardiovascular & Vitals</h3>
                         </div>
-                        <span class="text-[10px] text-slate-400 font-mono">5 Biomarkers</span>
+                        <span class="text-[10px] text-slate-400 font-mono">5 Features</span>
                     </div>
                     <div id="panel-cardio" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1.5 custom-scroll">
                         <!-- Populated by JS -->
@@ -211,7 +211,7 @@
                             </span>
                             <h3 class="font-bold text-xs text-slate-200 uppercase tracking-wide">4. Lipids, Hepatic & Renal</h3>
                         </div>
-                        <span class="text-[10px] text-slate-400 font-mono">7 Biomarkers</span>
+                        <span class="text-[10px] text-slate-400 font-mono">7 Features</span>
                     </div>
                     <div id="panel-organ" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1.5 custom-scroll">
                         <!-- Populated by JS -->
@@ -223,12 +223,12 @@
             <!-- COMPUTE ANALYSIS BUTTON -->
             <div class="mt-5 flex flex-col items-center">
                 <button onclick="computeAnalysisAndScroll()" class="w-full max-w-lg py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-cyan-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2.5 tracking-wide">
-                    <i class="fa-solid fa-microchip text-base"></i>
+                    <i class="fa-solid fa-calculator text-base"></i>
                     <span>COMPUTE ANALYSIS</span>
                     <i class="fa-solid fa-arrow-down text-xs animate-bounce ml-1"></i>
                 </button>
                 <p class="text-[11px] text-slate-500 mt-2">
-                    Evaluates Logistic Regression model & scrolls to diagnostic result below
+                    Applies StandardScaler and evaluates Logistic Regression model
                 </p>
             </div>
         </section>
@@ -242,12 +242,12 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-chart-line text-cyan-400"></i> Model Classification Result
+                        <i class="fa-solid fa-chart-pie text-cyan-400"></i> Model Prediction Results
                     </h2>
-                    <p class="text-xs text-slate-400">Output generated strictly by the trained Logistic Regression classifier.</p>
+                    <p class="text-xs text-slate-400">Output generated by trained Logistic Regression classifier.</p>
                 </div>
                 <span id="risk-status-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                    Low Risk (Class 0)
+                    Class 0
                 </span>
             </div>
 
@@ -255,52 +255,51 @@
             <div class="bg-cardbg rounded-2xl p-6 border border-cardborder shadow-xl">
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
                     
-                    <!-- Verdict & Predicted Class (6 Columns) -->
+                    <!-- Predicted Class (6 Columns) -->
                     <div class="md:col-span-6 flex items-center gap-4">
                         <div id="verdict-icon-box" class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-2xl flex-shrink-0">
                             <i id="verdict-icon" class="fa-solid fa-circle-check"></i>
                         </div>
                         <div>
-                            <div class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Predicted Target Class</div>
+                            <div class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Predicted Class</div>
                             <h3 id="verdict-title" class="text-2xl font-black tracking-tight text-emerald-400">HEALTHY (CLASS 0)</h3>
-                            <p id="verdict-subtitle" class="text-xs text-slate-400 mt-0.5">Calculated risk is safely below the 0.45 triage threshold.</p>
+                            <p id="verdict-subtitle" class="text-xs text-slate-400 mt-0.5">Calculated probability is below the 0.50 decision threshold.</p>
                         </div>
                     </div>
 
                     <!-- Model Probability Meter (6 Columns) -->
                     <div class="md:col-span-6 bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
                         <div class="flex justify-between text-xs font-medium">
-                            <span class="text-slate-400">Probability P(Disease = 1):</span>
+                            <span class="text-slate-400">Disease Probability:</span>
                             <span id="verdict-probability" class="font-bold text-cyan-400 font-mono text-sm">0.2%</span>
                         </div>
                         <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
                             <div id="verdict-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-700 shadow-sm" style="width: 0.2%"></div>
                         </div>
                         <div class="flex justify-between text-[10px] text-slate-400 font-mono pt-1">
-                            <span>Healthy (Class 0)</span>
-                            <span class="text-amber-400 font-semibold">Decision Cutoff: 0.45</span>
-                            <span>Disease (Class 1)</span>
+                            <span>0% Healthy</span>
+                            <span class="text-amber-400 font-semibold">Threshold: 0.50</span>
+                            <span>100% Disease</span>
                         </div>
                     </div>
 
                 </div>
             </div>
 
-            <!-- SECTION 3: FACTORS CONTRIBUTING AND HEALTHY (SHOULD BE) VALUES -->
-            <!-- ONLY showing factors that are abnormal / deviating from optimal healthy bounds -->
+            <!-- SECTION 3: ABNORMAL FACTORS (ONLY DEVIATING INPUTS) -->
             <div class="bg-cardbg rounded-2xl p-6 border border-cardborder shadow-xl space-y-4">
                 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
                     <div>
                         <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Contributing Risk Factors (Abnormal Biomarkers)
+                            <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Abnormal Biomarker Factors
                         </h3>
                         <p class="text-xs text-slate-400">
-                            Lists only biomarkers that deviate from expected healthy values, showing their value vs what they should be.
+                            Lists only input features that deviate outside normal healthy values.
                         </p>
                     </div>
                     <span id="abnormal-count-badge" class="px-2.5 py-1 rounded-md text-[11px] font-mono bg-slate-900 border border-slate-800 text-cyan-400">
-                        0 Abnormal Biomarkers
+                        0 Abnormal Features
                     </span>
                 </div>
 
@@ -309,12 +308,11 @@
                     <table class="w-full text-left text-xs text-slate-300 border-collapse">
                         <thead>
                             <tr class="border-b border-slate-800 text-[11px] text-slate-400 uppercase tracking-wider bg-slate-900/50">
-                                <th class="py-2.5 px-3">Contributing Biomarker</th>
+                                <th class="py-2.5 px-3">Biomarker Feature</th>
                                 <th class="py-2.5 px-3">Panel</th>
-                                <th class="py-2.5 px-3 text-right">Patient's Value</th>
-                                <th class="py-2.5 px-3 text-center">Healthy Value (Should Be)</th>
-                                <th class="py-2.5 px-3">Deviation from Normal</th>
-                                <th class="py-2.5 px-3 text-right">Model Risk Weight (β · z)</th>
+                                <th class="py-2.5 px-3 text-right">Entered Value</th>
+                                <th class="py-2.5 px-3 text-center">Normal Range (Should Be)</th>
+                                <th class="py-2.5 px-3 text-right">Status</th>
                             </tr>
                         </thead>
                         <tbody id="factors-table-body" class="divide-y divide-slate-800/60 font-sans">
@@ -323,19 +321,10 @@
                     </table>
                 </div>
 
-                <!-- Banner when NO abnormal factors are found (e.g. Healthy) -->
+                <!-- Banner when all are normal -->
                 <div id="all-healthy-banner" class="hidden p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center text-xs text-emerald-300 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
-                    <span>All 24 biomarkers are within optimal healthy reference bounds. No adverse contributing factors detected.</span>
-                </div>
-
-                <!-- Mathematical Footnote -->
-                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-[11px] text-slate-400 flex items-start gap-2.5">
-                    <i class="fa-solid fa-circle-info text-cyan-400 mt-0.5 text-xs"></i>
-                    <div>
-                        <strong class="text-slate-200">Logistic Regression Feature Weight:</strong> 
-                        Impact is computed as <span class="font-mono text-cyan-300">Impact = βᵢ · zᵢ</span>, where <span class="font-mono text-slate-300">zᵢ</span> is the standardized biomarker and <span class="font-mono text-slate-300">βᵢ</span> is the model's learned coefficient. Factors with positive impact push the sigmoid function toward a diseased classification.
-                    </div>
+                    <span>All 24 biomarkers are within normal healthy bounds. No abnormal inputs detected.</span>
                 </div>
 
             </div>
@@ -347,7 +336,7 @@
     <!-- Footer -->
     <footer class="bg-[#0b1329] border-t border-slate-800/80 py-4 mt-12">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
-            VitalScan AI &bull; Logistic Regression Disease Prediction &bull; Built with Flask & Scikit-Learn
+            VitalScan AI &bull; Logistic Regression Disease Prediction Project &bull; B.Tech Computer Science
         </div>
     </footer>
 
@@ -355,7 +344,6 @@
     <script>
         let FEATURES = [];
         let PRESETS = {};
-        let LAST_RESULT = null;
 
         // Initialize App
         async function init() {
@@ -401,10 +389,7 @@
                 }
             }
 
-            // Close dropdown
             document.getElementById('presetDropdownMenu').classList.add('hidden');
-
-            // Re-evaluate
             evaluatePatient(false);
         }
 
@@ -474,7 +459,6 @@
                     body: JSON.stringify(payload)
                 });
                 const result = await res.json();
-                LAST_RESULT = result;
                 updateResultsUI(result);
 
                 if (shouldScroll) {
@@ -485,7 +469,7 @@
             }
         }
 
-        // Update Results UI (Pure ML focus)
+        // Update Results UI
         function updateResultsUI(res) {
             const statusBadge = document.getElementById('risk-status-badge');
             const iconBox = document.getElementById('verdict-icon-box');
@@ -501,29 +485,20 @@
             prob.innerText = `${res.probability_disease}%`;
             bar.style.width = `${res.probability_disease}%`;
 
-            // Binary Classification output styling
-            if (res.risk_level === "Low") {
+            // Standard binary classification output
+            if (res.prediction_class === 0) {
                 title.innerText = "HEALTHY (CLASS 0)";
                 title.className = "text-2xl font-black tracking-tight text-emerald-400";
-                subtitle.innerText = "Calculated risk is safely below the 0.45 triage cutoff.";
+                subtitle.innerText = "Calculated probability is below the 0.50 decision threshold.";
                 statusBadge.innerText = "Class 0 (Negative)";
                 statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
                 iconBox.className = "w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-2xl flex-shrink-0";
                 icon.className = "fa-solid fa-circle-check";
                 bar.className = "h-full bg-emerald-500 rounded-full transition-all duration-700";
-            } else if (res.risk_level.includes("Moderate")) {
-                title.innerText = "BORDERLINE RISK";
-                title.className = "text-2xl font-black tracking-tight text-amber-400";
-                subtitle.innerText = "Close to decision boundary (0.28 - 0.45).";
-                statusBadge.innerText = "Borderline Zone";
-                statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30";
-                iconBox.className = "w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-2xl flex-shrink-0";
-                icon.className = "fa-solid fa-triangle-exclamation";
-                bar.className = "h-full bg-amber-500 rounded-full transition-all duration-700";
             } else {
                 title.innerText = "DISEASE DETECTED (CLASS 1)";
                 title.className = "text-2xl font-black tracking-tight text-rose-400";
-                subtitle.innerText = "Calculated probability exceeds the 0.45 classification cutoff.";
+                subtitle.innerText = "Calculated probability exceeds the 0.50 decision threshold.";
                 statusBadge.innerText = "Class 1 (Positive)";
                 statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-500/10 text-rose-400 border border-rose-500/30 animate-pulse";
                 iconBox.className = "w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center text-2xl flex-shrink-0";
@@ -531,14 +506,14 @@
                 bar.className = "h-full bg-rose-500 rounded-full transition-all duration-700";
             }
 
-            // Render Abnormal Factors Table (Strictly excluding optimal factors)
+            // Render Abnormal Factors Table (Excludes optimal)
             tbody.innerHTML = "";
             const abnormalList = res.abnormal_factors || [];
-            countBadge.innerText = `${abnormalList.length} Abnormal Biomarkers`;
+            countBadge.innerText = `${abnormalList.length} Abnormal Features`;
 
             if (abnormalList.length === 0) {
                 banner.classList.remove('hidden');
-                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-500 italic">No abnormal factors detected.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-500 italic">No abnormal features detected.</td></tr>`;
             } else {
                 banner.classList.add('hidden');
                 abnormalList.forEach(item => {
@@ -549,17 +524,12 @@
                     let valColor = "text-slate-200";
 
                     if (item.status_badge === "high") {
-                        statusHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30"><i class="fa-solid fa-arrow-up mr-1"></i>${item.diff_text}</span>`;
+                        statusHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30"><i class="fa-solid fa-arrow-up mr-1"></i>${item.status_text}</span>`;
                         valColor = "text-rose-400 font-bold";
                     } else {
-                        statusHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/10 text-sky-400 border border-sky-500/30"><i class="fa-solid fa-arrow-down mr-1"></i>${item.diff_text}</span>`;
+                        statusHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/10 text-sky-400 border border-sky-500/30"><i class="fa-solid fa-arrow-down mr-1"></i>${item.status_text}</span>`;
                         valColor = "text-sky-400 font-bold";
                     }
-
-                    const contribText = (item.contribution > 0) ? `+${item.contribution.toFixed(2)}` : `${item.contribution.toFixed(2)}`;
-                    const contribBadge = (item.contribution > 0) 
-                        ? `<span class="font-mono text-rose-400 font-bold">${contribText}</span>` 
-                        : `<span class="font-mono text-emerald-400">${contribText}</span>`;
 
                     tr.innerHTML = `
                         <td class="py-2.5 px-3 font-semibold text-slate-200">
@@ -576,11 +546,8 @@
                                 ${item.healthy_range} (Typical: ${item.healthy_typical})
                             </span>
                         </td>
-                        <td class="py-2.5 px-3">
-                            ${statusHtml}
-                        </td>
                         <td class="py-2.5 px-3 text-right">
-                            ${contribBadge}
+                            ${statusHtml}
                         </td>
                     `;
                     tbody.appendChild(tr);

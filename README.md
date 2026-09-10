@@ -1,163 +1,133 @@
-# 🩺 VitalScan AI — Clinical Disease Prediction System
+# 🩺 VitalScan AI — Disease Prediction System
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Framework-Flask%203.1-emerald.svg)](https://flask.palletsprojects.com/)
 [![Scikit-Learn](https://img.shields.io/badge/ML-Scikit--Learn%201.7-orange.svg)](https://scikit-learn.org/)
 [![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 
-An interpretable machine learning clinical screening system that predicts disease risk from **24 routine blood biomarkers**. Built with **Regularized Logistic Regression**, **SMOTE oversampling**, **StandardScaler normalization**, and calibrated decision thresholds to prioritize clinical sensitivity (Recall).
+A foundational supervised machine learning project for disease screening using **Logistic Regression** on **24 blood biomarkers**. 
 
-Includes a modern, hospital-grade **Dark Mode web dashboard** designed for live clinical triage demonstrations.
-
----
-
-## 📌 Project Overview
-
-In clinical pathology and preventive triage, routine blood panels contain rich diagnostic biomarkers. However, subtle multivariate interactions (e.g., slight concurrent elevations in Glucose, HbA1c, Troponin, and CRP) can be overlooked until symptoms escalate.
-
-**VitalScan AI** provides a fast, interpretable screening tool:
-1. Evaluates **24 normalized physiological biomarkers** across 4 clinical panels.
-2. Applies a tuned **Logistic Regression** classifier with calibrated decision boundaries ($0.45$ cutoff).
-3. Produces a binary classification verdict: **HEALTHY (Class 0)** vs. **DISEASE DETECTED (Class 1)**.
-4. Explains predictions by computing the exact log-odds contribution ($\beta_i \times z_i$) of each biomarker and comparing abnormal values against healthy reference ranges.
+Designed for B.Tech Computer Science / Engineering class presentations with a clean, textbook ML pipeline and a live dark-mode web dashboard.
 
 ---
 
-## 🔬 Machine Learning Architecture
+## 📌 Problem Statement & Objective
+
+Given routine blood test parameters (such as Glucose, Cholesterol, Hemoglobin, Platelets, WBC, RBC, etc.), predict whether a patient has a disease condition (**Class 1**) or is healthy (**Class 0**).
+
+* **Input**: 24 normalized blood biomarkers ($0.00 - 1.00$).
+* **Model**: Logistic Regression classifier.
+* **Output**: Predicted class label (`0: Healthy`, `1: Disease`) and predicted probability $P(\text{Disease})$.
+
+---
+
+## 🔬 Standard Machine Learning Workflow
+
+This project strictly follows the core B.Tech Machine Learning curriculum:
 
 ```
-[24 Biomarkers] ──► [Stratified Split (80/20)] ──► [SMOTE (Train Only)] ──► [StandardScaler] 
-                                                                                   │
-[Prediction Output] ◄── [Calibrated Threshold (0.45)] ◄── [Logistic Regression (L2)] ◄┘
-         │
-         ├── Predicted Class: Healthy (0) vs. Disease (1)
-         ├── Calibrated Probability P(Disease)
-         └── Contributing Abnormal Risk Factors (β · z)
+[Blood Test Dataset (24 Features)]
+               │
+               ▼
+[Data Cleaning: Drop Duplicates & Null Check]
+               │
+               ▼
+[Train-Test Split: 80% Training, 20% Testing]
+               │
+               ▼
+[Feature Scaling: StandardScaler (fit on train, transform test)]
+               │
+               ▼
+[Model Training: LogisticRegression().fit(X_train, y_train)]
+               │
+               ▼
+[Evaluation: Accuracy, Confusion Matrix, Classification Report]
+               │
+               ▼
+[Deployment: Flask Web Application with 2x2 Dark Mode UI]
 ```
 
-### Key Technical Highlights
-* **Zero Data Leakage**: Stratified train/test splitting performed *before* any synthetic oversampling. The test set remains 100% natural and untouched.
-* **Class Imbalance Mitigation**: SMOTE applied exclusively to the training fold to balance minority healthy records.
-* **Feature Standardization**: `StandardScaler` ensures $L_2$ regularization penalties act fairly across all biomarkers.
-* **Hyperparameter Optimization**: Regularization strength $C$ and solver optimized using 5-Fold Stratified Cross-Validation scoring for **Recall** (Sensitivity).
-* **Clinical Explainability**: Unlike black-box algorithms, Logistic Regression provides direct interpretability via learned coefficients ($\beta$) and Odds Ratios ($\exp(\beta)$).
+### 1. Data Ingestion & Cleaning
+* Checked for missing values (`df.isnull().sum()`).
+* Removed duplicate patient rows (`df.drop_duplicates()`).
+* Mapped target labels to binary values: `Healthy = 0`, `Disease = 1`.
 
----
+### 2. Train / Test Split
+* Split the dataset into **80% training data** (to fit model weights) and **20% testing data** (to evaluate generalization on unseen data).
+* `random_state=42` ensures reproducible results.
 
-## 🧪 The 24 Blood Biomarkers
+### 3. Feature Scaling (`StandardScaler`)
+* Scaled features to have a mean of $0$ and standard deviation of $1$.
+* Essential for Logistic Regression to ensure features with different variance are weighted fairly.
 
-The input features are organized into 4 clinical panels:
+### 4. Model Training (`LogisticRegression`)
+* Fits a linear decision boundary mapped through the standard **Sigmoid activation function**:
+  $$\sigma(z) = \frac{1}{1 + e^{-z}}$$
+* Standard decision threshold of **0.50**:
+  * If $P(\text{Disease}) \ge 0.50 \rightarrow \text{Class 1 (Disease)}$
+  * If $P(\text{Disease}) < 0.50 \rightarrow \text{Class 0 (Healthy)}$
 
-| Panel | Biomarkers Included | Typical Healthy Range |
-| :--- | :--- | :---: |
-| **1. Metabolic & Glycemic** | Blood Glucose, Insulin, HbA1c, BMI | $0.30 - 0.55$ |
-| **2. Complete Blood Count (CBC)** | Hemoglobin, Platelets, WBC, RBC, Hematocrit, MCV, MCH, MCHC | $0.35 - 0.70$ |
-| **3. Cardiovascular & Vitals** | Systolic BP, Diastolic BP, Heart Rate, Cardiac Troponin, CRP | $0.20 - 0.55$ |
-| **4. Lipids, Hepatic & Renal** | Cholesterol, Triglycerides, LDL, HDL, ALT, AST, Creatinine | $0.25 - 0.55$ |
-
-*All biomarkers in this dataset are normalized between $0.00$ and $1.00$.*
+### 5. Evaluation Metrics
+* **Accuracy**: Overall correct predictions on test set (~89-91%).
+* **Confusion Matrix**: Visualizes True Positives, True Negatives, False Positives, and False Negatives.
+* **Classification Report**: Evaluates Precision, Recall, and F1-Score.
+* **Feature Importance**: Plots model coefficients (`model.coef_`) to show which biomarkers most strongly indicate disease risk (e.g. elevated Glucose, Troponin).
 
 ---
 
 ## 💻 Web Application Features
 
-* **Compact 2x2 Input Grid**: Displays all 24 inputs cleanly above the fold.
-* **Interactive Controls**: Synchronized range sliders and direct numeric boxes with normal reference range tooltips.
-* **Quick Clinical Presets**:
-  * 🟢 **Healthy Adult**: All biomarkers inside healthy limits $\rightarrow$ `Class 0 (0.2% Risk)`.
-  * 🔴 **Type 2 Diabetes**: Spikes Glucose ($0.88$), HbA1c ($0.89$), and Insulin ($0.82$) $\rightarrow$ `Class 1 (92.2% Risk)`.
-  * 🟠 **Severe Anemia**: Depletes Hemoglobin ($0.14$), RBC ($0.18$), and Hematocrit ($0.16$) $\rightarrow$ `Class 1`.
-  * 🟣 **Acute Cardiac Alert**: Spikes Troponin ($0.92$) and CRP ($0.88$) $\rightarrow$ `Class 1`.
-  * 🔵 **Thrombocytopenia**: Depletes Platelets ($0.08$) $\rightarrow$ `Class 1`.
-* **Abnormal Factors Comparison Table**: Filters out optimal inputs and highlights only abnormal markers, comparing the patient's value directly against what it *should be* along with its model risk weight.
+The project includes an interactive web application built with **Flask** and **Tailwind CSS**:
+
+* **Dark Mode Theme**: Modern clinical UI.
+* **2x2 Compact Input Grid**: Groups the 24 biomarkers into 4 panels (Metabolic, CBC, Cardiovascular, Lipids & Organs).
+* **Preset Profiles**: One-click dropdown to demo *Healthy Adult*, *Diabetes Risk*, *Anemia Risk*, *Cardiac Alert*, and *Thrombocytopenia*.
+* **Compute Analysis**: Scales inputs, runs Logistic Regression, and scrolls down to the prediction verdict.
+* **Abnormal Factors Table**: Filters out normal inputs and only displays abnormal markers, comparing entered values against healthy ranges.
 
 ---
 
 ## 🚀 Running Locally
 
-### Prerequisites
-* Python 3.10+ (or Anaconda)
+### 1. Run using Batch File (Windows)
+Simply double-click [`run_app.bat`](file:///c:/Users/gargk/Desktop/disease%20prediction%20mini%20inter/run_app.bat).
 
-### Quick Start (Windows)
-Double-click `run_app.bat` to launch the server automatically.
-
-### Manual Setup
+### 2. Run from Terminal
 ```bash
-# 1. Clone repository
-git clone https://github.com/YOUR_USERNAME/vitalscan-ai.git
-cd vitalscan-ai
-
-# 2. Install dependencies
+# Install dependencies
 pip install -r requirements.txt
 
-# 3. (Optional) Re-train and export model
-python train_export_model.py
-
-# 4. Start the web application
+# Run web app
 python app.py
 ```
-Open **`http://localhost:5000`** in your browser.
+Open **`http://localhost:5000`** in any browser.
 
 ---
 
-## ☁️ Deploying on Render (Step-by-Step)
+## ☁️ Deploying on Render (Free Hosting)
 
-Deploy this project on [Render.com](https://render.com) for free in **under 3 minutes**:
-
-### Step 1: Push Project to GitHub
-1. Create a new repository on [GitHub](https://github.com/new) (e.g. `vitalscan-ai`).
-2. In your terminal, run:
-```bash
-git init
-git add .
-git commit -m "Initial release: VitalScan AI Disease Screener"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/vitalscan-ai.git
-git push -u origin main
-```
-
-### Step 2: Deploy on Render
-1. Log in to [Render.com](https://render.com) and click **"New +"** $\rightarrow$ **"Web Service"**.
-2. Select **"Build and deploy from a Git repository"** and choose your `vitalscan-ai` repo.
-3. Configure the service settings (Render auto-detects most settings from `render.yaml` and `Procfile`):
-   * **Name**: `vitalscan-ai`
-   * **Environment**: `Python 3`
-   * **Region**: Nearest to your users (e.g., Singapore, Frankfurt, Oregon)
-   * **Branch**: `main`
+1. Push this project to your GitHub repository:
+   ```bash
+   git add .
+   git commit -m "Standard B.Tech ML workflow for Render deployment"
+   git push origin main
+   ```
+2. Go to **[dashboard.render.com](https://dashboard.render.com/)** $\rightarrow$ **New +** $\rightarrow$ **Web Service**.
+3. Select your GitHub repository.
+4. Render automatically configures the service using `render.yaml` and `Procfile`:
    * **Build Command**: `pip install -r requirements.txt`
    * **Start Command**: `gunicorn app:app`
-   * **Instance Type**: `Free`
-4. Click **"Deploy Web Service"**.
-
-Render will install dependencies, load the serialized model, and provide a public URL like:
-`https://vitalscan-ai.onrender.com`
+5. Click **Deploy Web Service**. Render gives you a live public URL (e.g. `https://vitalscan-ai.onrender.com`).
 
 ---
 
-## 📁 Repository Structure
+## 🎓 Viva Questions & Answers (Class Presentation Guide)
 
-```
-├── app.py                  # Flask backend web application & REST API
-├── templates/
-│   └── index.html          # Dark Mode clinical dashboard UI
-├── model.joblib            # Trained Logistic Regression classifier
-├── scaler.joblib           # Fitted StandardScaler object
-├── features.joblib         # Serialized feature sequence
-├── train_export_model.py   # Training script to reproduce model artifacts
-├── DP.ipynb                # Jupyter notebook with research, EDA & evaluations
-├── DP_backup.ipynb         # Original notebook backup
-├── requirements.txt        # Production Python dependencies
-├── Procfile                # WSGI process definition for Render/Heroku
-├── render.yaml             # Render Blueprint configuration
-├── run_app.bat             # 1-click Windows launcher
-├── .gitignore              # Ignored files and caches
-└── README.md               # Complete project documentation
-```
-
----
-
-## 👥 Team & Academic Context
-
-* **Project Type**: Machine Learning Mini-Project / Clinical Decision Support
-* **Focus Algorithm**: Regularized Logistic Regression with Interpretability (Odds Ratios)
-* **Evaluation Metrics**: Recall (Sensitivity), Precision, F1-Score, ROC-AUC
+1. **Q: Why did you choose Logistic Regression?**
+   * *A:* "Logistic Regression is the foundational algorithm for binary classification. It maps linear combinations of features to a probability between 0 and 1 using the Sigmoid function, making it easy to interpret."
+2. **Q: Why did you scale the data using StandardScaler?**
+   * *A:* "Because features can have different numerical scales and variances. StandardScaler centers the data around mean 0 with standard deviation 1 so all features contribute equally during gradient optimization."
+3. **Q: Why did you split the data 80-20?**
+   * *A:* "To prevent overfitting and test our model on unseen data. 80% is used for training the parameters, and 20% is held out strictly for evaluation."
+4. **Q: What is the decision threshold?**
+   * *A:* "We used the standard 0.50 threshold: if the Sigmoid probability is 50% or higher, the patient is classified as Class 1 (Disease)."

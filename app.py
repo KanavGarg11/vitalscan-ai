@@ -1,7 +1,10 @@
 """
-VitalScan AI - Flask Web Application Backend
-Pure Machine Learning Disease Prediction (Logistic Regression)
-Focuses strictly on classification, probability, and abnormal feature contributions.
+VitalScan AI - Simple B.Tech ML Web Application
+Standard Workflow:
+1. Receives 24 biomarker inputs
+2. Scales features using StandardScaler
+3. Generates prediction using standard Logistic Regression (threshold = 0.50)
+4. Displays abnormal inputs alongside expected healthy ranges
 """
 from flask import Flask, render_template, request, jsonify
 import joblib
@@ -295,16 +298,16 @@ FEATURE_METADATA = [
     }
 ]
 
-# Clinical Patient Presets
+# Simple Presentation Presets
 PRESETS = {
     "healthy": {
-        "title": "Healthy Routine Adult",
+        "title": "Healthy Adult Profile",
         "desc": "All 24 biomarkers within healthy reference bounds",
         "values": {f["id"]: f["default"] for f in FEATURE_METADATA}
     },
     "diabetes": {
-        "title": "Type 2 Diabetes Risk",
-        "desc": "Markedly elevated Glucose, HbA1c, and Insulin",
+        "title": "Diabetes Risk Profile",
+        "desc": "Elevated Glucose, HbA1c, and Insulin",
         "values": {
             **{f["id"]: f["default"] for f in FEATURE_METADATA},
             "Glucose": 0.88,
@@ -315,20 +318,20 @@ PRESETS = {
         }
     },
     "anemia": {
-        "title": "Severe Anemia Profile",
-        "desc": "Depleted Hemoglobin, RBC count, Hematocrit, and low MCV",
+        "title": "Anemia Risk Profile",
+        "desc": "Depleted Hemoglobin, RBC count, and Hematocrit",
         "values": {
             **{f["id"]: f["default"] for f in FEATURE_METADATA},
             "Hemoglobin": 0.14,
             "Red Blood Cells": 0.18,
             "Hematocrit": 0.16,
             "Mean Corpuscular Volume": 0.22,
-            "Heart Rate": 0.72
+            "Heart Rate": 0.70
         }
     },
     "cardiac": {
-        "title": "Acute Cardiac / Inflammatory Alert",
-        "desc": "Elevated Troponin, high CRP, high BP, and high LDL",
+        "title": "Cardiac Risk Alert",
+        "desc": "Elevated Troponin, CRP, and Blood Pressure",
         "values": {
             **{f["id"]: f["default"] for f in FEATURE_METADATA},
             "Troponin": 0.92,
@@ -341,7 +344,7 @@ PRESETS = {
     },
     "thromboc": {
         "title": "Thrombocytopenia Alert",
-        "desc": "Critically depleted Platelets with clotting vulnerability",
+        "desc": "Critically low Platelet count",
         "values": {
             **{f["id"]: f["default"] for f in FEATURE_METADATA},
             "Platelets": 0.08,
@@ -366,7 +369,7 @@ def predict():
     try:
         data = request.get_json() or {}
         
-        # Build ordered input vector
+        # 1. Build input vector
         input_vector = []
         meta_dict = {f["id"]: f for f in FEATURE_METADATA}
         
@@ -375,84 +378,65 @@ def predict():
             val = max(0.0, min(1.0, val))
             input_vector.append(val)
         
+        # 2. Scale features
         X_df = pd.DataFrame([input_vector], columns=features)
         X_scaled = scaler.transform(X_df)
         
-        # Logistic Regression Probability
+        # 3. Standard Logistic Regression Prediction & Probability
+        prediction = int(model.predict(X_scaled)[0])
         prob_disease = float(model.predict_proba(X_scaled)[0][1])
-        prob_healthy = 1.0 - prob_disease
+        prob_healthy = float(1.0 - prob_disease)
         
-        # Binary Classification output based on clinical screening threshold (0.45)
-        is_disease = prob_disease >= 0.45
-        
-        # Determine classification status and risk tier
-        if prob_disease < 0.28:
-            risk_level = "Low"
-            status = "HEALTHY (CLASS 0)"
-        elif prob_disease < 0.45:
-            risk_level = "Moderate (Borderline)"
-            status = "BORDERLINE / WATCH"
-        else:
-            risk_level = "High"
+        # Standard 0.50 decision threshold
+        if prediction == 1:
             status = "DISEASE DETECTED (CLASS 1)"
+            status_badge = "Class 1"
+        else:
+            status = "HEALTHY (CLASS 0)"
+            status_badge = "Class 0"
         
-        # Compute feature contributions (Log-Odds = beta_i * z_i)
-        coefs = model.coef_[0]
-        z_scores = X_scaled[0]
-        contributions = coefs * z_scores
-        
+        # 4. Identify only abnormal factors (filter out optimal ones)
         abnormal_factors = []
         
-        for feat, contrib, raw_val, z in zip(features, contributions, input_vector, z_scores):
+        for feat, raw_val in zip(features, input_vector):
             f_meta = meta_dict.get(feat, {})
             norm_min = f_meta.get("normal_min", 0.30)
             norm_max = f_meta.get("normal_max", 0.55)
             norm_label = f_meta.get("normal", "0.30 - 0.55")
             default_val = f_meta.get("default", 0.45)
             
-            # Check if value deviates from healthy range
-            is_abnormal = False
-            status_badge = "normal"
-            diff_text = "Optimal"
-            
             if raw_val > norm_max + 0.05:
-                is_abnormal = True
-                status_badge = "high"
                 diff_pct = round(((raw_val - norm_max) / norm_max) * 100)
-                diff_text = f"+{diff_pct}% Above Target"
-            elif raw_val < norm_min - 0.05:
-                is_abnormal = True
-                status_badge = "low"
-                diff_pct = round(((norm_min - raw_val) / norm_min) * 100)
-                diff_text = f"-{diff_pct}% Below Target"
-                
-            # ONLY include abnormal factors that deviate from optimal bounds!
-            if is_abnormal:
                 abnormal_factors.append({
-                    "feature": feat,
                     "name": f_meta.get("name", feat),
                     "category": f_meta.get("category", "General"),
                     "raw_value": round(raw_val, 2),
                     "healthy_range": norm_label,
                     "healthy_typical": default_val,
-                    "contribution": round(float(contrib), 3),
-                    "z_score": round(float(z), 2),
-                    "status_badge": status_badge,
-                    "diff_text": diff_text
+                    "status_badge": "high",
+                    "status_text": f"+{diff_pct}% Above Normal"
                 })
-            
-        # Sort abnormal factors by absolute risk impact
-        abnormal_factors = sorted(abnormal_factors, key=lambda x: abs(x["contribution"]), reverse=True)
+            elif raw_val < norm_min - 0.05:
+                diff_pct = round(((norm_min - raw_val) / norm_min) * 100)
+                abnormal_factors.append({
+                    "name": f_meta.get("name", feat),
+                    "category": f_meta.get("category", "General"),
+                    "raw_value": round(raw_val, 2),
+                    "healthy_range": norm_label,
+                    "healthy_typical": default_val,
+                    "status_badge": "low",
+                    "status_text": f"-{diff_pct}% Below Normal"
+                })
 
         return jsonify({
             "status": "success",
             "prediction": status,
-            "is_disease": is_disease,
+            "prediction_class": prediction,
+            "status_badge": status_badge,
             "probability_disease": round(prob_disease * 100, 1),
             "probability_healthy": round(prob_healthy * 100, 1),
-            "risk_level": risk_level,
             "abnormal_factors": abnormal_factors,
-            "has_abnormal_factors": len(abnormal_factors) > 0
+            "has_abnormal": len(abnormal_factors) > 0
         })
         
     except Exception as e:
@@ -460,7 +444,7 @@ def predict():
 
 @app.route('/healthz')
 def healthz():
-    """Health check endpoint for cloud platforms like Render."""
+    """Health check endpoint for Render."""
     return jsonify({"status": "healthy", "service": "vitalscan-ai"}), 200
 
 if __name__ == '__main__':
@@ -468,4 +452,3 @@ if __name__ == '__main__':
     debug_mode = os.environ.get('FLASK_ENV') == 'development'
     print(f"Starting VitalScan AI on http://0.0.0.0:{port}")
     app.run(debug=debug_mode, host='0.0.0.0', port=port)
-
